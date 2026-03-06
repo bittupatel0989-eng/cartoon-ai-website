@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Free AI Cartoon Generator</title>
+
+<style>
+body{
+font-family:Arial;
+text-align:center;
+background:#f2f2f2;
+}
+
+img{
+max-width:300px;
+margin-top:20px;
+filter: contrast(120%) saturate(150%);
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>Free AI Cartoon Generator</h1>
+
+<p>Upload your photo</p>
+
+<input type="file" id="upload">
+
+<br><br>
+
+<img id="preview">
+
+<script>
+const upload = document.getElementById("upload");
+const preview = document.getElementById("preview");
+
+upload.addEventListener("change", function(){
+const file = upload.files[0];
+preview.src = URL.createObjectURL(file);
+});
+</script>
+
+</body>
+</html>
