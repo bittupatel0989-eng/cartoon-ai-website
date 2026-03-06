@@ -1,24 +1,35 @@
+
 <!DOCTYPE html>
 <html>
 <head>
     <title>Free AI Cartoon Photo Maker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body{
-            font-family: Arial;
+            font-family: Arial, sans-serif;
             text-align: center;
             background: #f2f2f2;
-            padding: 30px;
+            padding: 20px;
         }
         img{
-            max-width: 300px;
+            max-width: 90%;
             margin-top: 20px;
             filter: contrast(120%) saturate(150%);
             border-radius: 10px;
         }
         input, button{
-            margin-top: 20px;
-            padding: 10px;
+            margin-top: 15px;
+            padding: 10px 20px;
             font-size: 16px;
+            border-radius: 5px;
+        }
+        button{
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+        button:hover{
+            background-color: #45a049;
         }
     </style>
 </head>
@@ -27,7 +38,7 @@
 <h1>Free AI Cartoon Photo Maker</h1>
 <p>Upload your photo below and see cartoon effect!</p>
 
-<input type="file" id="upload">
+<input type="file" id="upload" accept="image/*">
 <br>
 <img id="preview" style="display:none">
 <br>
