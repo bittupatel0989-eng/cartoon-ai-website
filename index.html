@@ -31,7 +31,7 @@ body.dark-mode .photo-caption { background: rgba(255,255,255,0.2); color:#fff; }
 <h1>Ultimate Gemini-Level Cartoon AI Pro Max</h1>
 <div class="button-container">
 <label for="upload-photo" class="custom-upload">Upload Photo</label>
-<input type="file" id="upload-photo" multiple accept="image/*">
+<input type="file" id="upload-photo" accept="image/*">
 <button id="generate-cartoon">Generate Cartoon</button>
 <button id="dark-toggle">Dark/Light Mode</button>
 <button id="random-style">Random Style</button>
@@ -54,17 +54,17 @@ let uploadedImage=null;// 100+ Cartoon Styles const styles=["Toon","Sketch","Com
 
 // Generate gallery cards styles.forEach(style=>{ const card=document.createElement("div"); card.className="photo-card"; const img=document.createElement("img"); img.src="https://via.placeholder.com/300x300.png?text="+style; const caption=document.createElement("div"); caption.className="photo-caption"; caption.innerText=style; card.appendChild(img); card.appendChild(caption); photoGrid.appendChild(card); card.addEventListener("click",()=>{applyStyle(style);}); });
 
-// Handle upload uploadInput.addEventListener("change",(e)=>{ const file=e.target.files[0]; if(file){ const reader=new FileReader(); reader.onload=function(event){ uploadedImage=new Image(); uploadedImage.onload=()=>{ ctx.drawImage(uploadedImage,0,0,canvas.width,canvas.height); }; uploadedImage.src=event.target.result; }; reader.readAsDataURL(file); } });
+// Handle upload with instant canvas preview uploadInput.addEventListener("change",(e)=>{ const file=e.target.files[0]; if(file){ const reader=new FileReader(); reader.onload=function(event){ uploadedImage=new Image(); uploadedImage.onload=()=>{ ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(uploadedImage,0,0,canvas.width,canvas.height); }; uploadedImage.src=event.target.result; }; reader.readAsDataURL(file); } });
 
-// Apply style function (simulated, will replace with API call) function applyStyle(style){ if(!uploadedImage) return; ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(uploadedImage,0,0,canvas.width,canvas.height); ctx.fillStyle="rgba(255,255,255,0.3)"; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.fillStyle="#333"; ctx.font="40px Montserrat"; ctx.fillText("Cartoon Style: "+style,50,canvas.height/2); }
+// Apply style function (placeholder, ready for API integration) function applyStyle(style){ if(!uploadedImage) return; ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(uploadedImage,0,0,canvas.width,canvas.height); ctx.fillStyle="rgba(255,255,255,0.3)"; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.fillStyle="#333"; ctx.font="40px Montserrat"; ctx.fillText("Cartoon Style: "+style,50,canvas.height/2); }
 
-// Generate Cartoon Button (placeholder for real API integration) generateBtn.addEventListener("click",()=>{ if(!uploadedImage){ alert("Please upload a photo first!"); return; } const rand=styles[Math.floor(Math.random()*styles.length)]; applyStyle(rand); // TODO: Replace this with real AI API call to generate cartoon });
+// Generate Cartoon Button (placeholder for real AI API) generateBtn.addEventListener("click",()=>{ if(!uploadedImage){ alert("Please upload a photo first!"); return; } const rand=styles[Math.floor(Math.random()*styles.length)]; applyStyle(rand); // TODO: Replace this with real AI API call to generate cartoon });
 
 // Dark/Light Mode darkToggle.addEventListener("click",()=>{ document.body.classList.toggle("dark-mode"); });
 
 // Random Style Button randomStyleBtn.addEventListener("click",()=>{ if(!uploadedImage){ alert("Please upload a photo first!"); return; } const rand=styles[Math.floor(Math.random()*styles.length)]; applyStyle(rand); });
 
-// Download Cartoon downloadBtn.addEventListener("click",()=>{ const link=document.createElement("a"); link.download="cartoon.png"; link.href=canvas.toDataURL(); link.click(); }); </script>
+// Download Cartoon downloadBtn.addEventListener("click",()=>{ if(!uploadedImage){ alert("Please upload a photo first!"); return; } const link=document.createElement("a"); link.download="cartoon.png"; link.href=canvas.toDataURL(); link.click(); }); </script>
 
 </body>
 </html>
