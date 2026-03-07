@@ -43,7 +43,7 @@ const styleOptionsDiv=document.getElementById('style-options');
 const downloadBtn=document.getElementById('download-photo');
 const darkToggle=document.getElementById('dark-toggle');let uploadedImage=null; let currentStyle='Normal'; const styles=["Normal","Grayscale","Contrast","Sepia","Hue","Saturate","Invert","Brightness","Pixelate","PopArt","Blur","Sketch"];
 
-// Create all style buttons and event listeners styles.forEach(style=>{ const btn=document.createElement('button'); btn.className='style-btn'; btn.textContent=style; btn.disabled=true; btn.addEventListener('click',()=>{ currentStyle=style; applyStyle(); }); styleOptionsDiv.appendChild(btn); });
+// Create all style buttons (old + new) styles.forEach(style=>{ const btn=document.createElement('button'); btn.className='style-btn'; btn.textContent=style; btn.disabled=true; btn.addEventListener('click',()=>{ currentStyle=style; applyStyle(); }); styleOptionsDiv.appendChild(btn); });
 
 // Enable all buttons after image upload function enableStyleButtons(){ document.querySelectorAll('.style-btn').forEach(btn=>btn.disabled=false); }
 
