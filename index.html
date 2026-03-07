@@ -2,68 +2,54 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ultimate Gemini-Level Cartoon AI Pro Max</title>
+<title>Pro Max Cartoon Generator</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 <style>
-html, body { margin:0; padding:0; width:100%; height:100%; font-family:'Montserrat',sans-serif; overflow-x:hidden; background:linear-gradient(135deg,#ff9a9e,#fad0c4); transition: background 0.5s; }
-#main-container { display:flex; flex-direction:column; align-items:center; min-height:100vh; width:100vw; padding:20px; box-sizing:border-box; }
-h1 { color:#fff; text-shadow:0 2px 8px rgba(0,0,0,0.3); margin-bottom:20px; font-weight:600; }
-.upload-canvas-container { display:flex; flex-direction:column; align-items:center; gap:15px; margin-bottom:20px; width:100%; max-width:900px; }
-.custom-upload { padding:12px 20px; font-size:16px; border-radius:12px; background:linear-gradient(45deg,#ff9a9e,#fad0c4); color:#fff; font-weight:600; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.25); transition: transform 0.2s, box-shadow 0.3s; }
-.custom-upload:hover { transform: scale(1.05); box-shadow:0 6px 18px rgba(0,0,0,0.35); }
+body { margin:0; padding:0; font-family:'Montserrat',sans-serif; background:linear-gradient(135deg,#ff9a9e,#fad0c4); display:flex; flex-direction:column; align-items:center; min-height:100vh; }
+h1 { color:#fff; text-shadow:0 2px 8px rgba(0,0,0,0.3); margin:20px 0; }
+.upload-container { display:flex; flex-direction:column; align-items:center; gap:15px; margin-bottom:20px; width:100%; max-width:600px; }
+.custom-upload, button { padding:12px 20px; font-size:16px; border-radius:12px; border:none; cursor:pointer; font-weight:600; transition:0.2s; }
+.custom-upload { background:linear-gradient(45deg,#ff9a9e,#fad0c4); color:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.25); }
+.custom-upload:hover, button:hover { transform:scale(1.05); box-shadow:0 6px 18px rgba(0,0,0,0.35); }
 input[type='file'] { display:none; }
-button { padding:12px 20px; font-size:16px; border-radius:12px; border:none; cursor:pointer; transition:transform 0.2s, box-shadow 0.3s; background: linear-gradient(45deg,#ff9a9e,#fad0c4); color:#fff; font-weight:600; box-shadow:0 4px 12px rgba(0,0,0,0.25); }
-button:hover { transform:scale(1.05); box-shadow:0 6px 18px rgba(0,0,0,0.35); }
-#photo-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:20px; width:90%; max-width:1600px; }
-.photo-card { position:relative; border-radius:12px; overflow:hidden; cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,0.25); transition:transform 0.3s; }
-.photo-card:hover { transform:scale(1.03); }
-.photo-card img { width:100%; display:block; }
-.photo-caption { position:absolute; bottom:0; width:100%; background:rgba(0,0,0,0.6); color:#fff; text-align:center; padding:6px 0; font-size:14px; font-weight:600; }
-#output-canvas { border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,0.3); width:100%; max-width:800px; height:auto; }
+#preview { width:100%; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,0.3); max-height:600px; object-fit:contain; }
+.button-container { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-bottom:20px; }
 body.dark-mode { background: linear-gradient(135deg,#2c3e50,#34495e); }
-body.dark-mode button,.custom-upload { background: linear-gradient(45deg,#34495e,#2c3e50); color:#fff; }
-body.dark-mode .photo-caption { background: rgba(255,255,255,0.2); color:#fff; }
-@media only screen and (max-width:768px){#photo-grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));}button,.custom-upload{font-size:14px;padding:10px 16px;}}
+body.dark-mode .custom-upload, body.dark-mode button { background: linear-gradient(45deg,#34495e,#2c3e50); color:#fff; }
 </style>
 </head>
 <body>
-<div id="main-container">
-<h1>Ultimate Gemini-Level Cartoon AI Pro Max</h1>
-<div class="upload-canvas-container">
+<h1>Pro Max Cartoon Generator</h1>
+<div class="upload-container">
 <label for="upload-photo" class="custom-upload">Upload Photo</label>
 <input type="file" id="upload-photo" accept="image/*">
-<canvas id="output-canvas"></canvas>
+<img id="preview" src="" alt="Uploaded Photo Preview">
 </div>
 <div class="button-container">
 <button id="generate-cartoon">Generate Cartoon</button>
-<button id="dark-toggle">Dark/Light Mode</button>
 <button id="random-style">Random Style</button>
 <button id="download-photo">Download Cartoon</button>
-</div>
-<div id="photo-grid"></div>
+<button id="dark-toggle">Dark/Light Mode</button>
 </div>
 <script>
-const canvas=document.getElementById("output-canvas");
-const ctx=canvas.getContext("2d");
-canvas.width=800; canvas.height=800;
-const uploadInput=document.getElementById("upload-photo");
-const generateBtn=document.getElementById("generate-cartoon");
-const darkToggle=document.getElementById("dark-toggle");
-const randomStyleBtn=document.getElementById("random-style");
-const downloadBtn=document.getElementById("download-photo");
-let uploadedImage=null;// Cartoon Styles const styles=["Toon","Sketch","Comic","Watercolor","PopArt","Pencil","Neon","Cartoonify","OilPaint","Fantasy","Anime","Caricature"];
+const uploadInput=document.getElementById('upload-photo');
+const previewImg=document.getElementById('preview');
+const generateBtn=document.getElementById('generate-cartoon');
+const randomStyleBtn=document.getElementById('random-style');
+const downloadBtn=document.getElementById('download-photo');
+const darkToggle=document.getElementById('dark-toggle');let uploadedSrc=''; const styles=["Toon","Sketch","Comic","Watercolor","PopArt","Pencil","Neon","Cartoonify","OilPaint","Fantasy","Anime","Caricature"];
 
-// Photo upload and canvas preview uploadInput.addEventListener("change",(e)=>{ const file=e.target.files[0]; if(file){ const reader=new FileReader(); reader.onload=function(event){ uploadedImage=new Image(); uploadedImage.onload=()=>{ canvas.height=(uploadedImage.height / uploadedImage.width)*canvas.width; ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(uploadedImage,0,0,canvas.width,canvas.height); }; uploadedImage.src=event.target.result; }; reader.readAsDataURL(file); } });
+// Photo upload preview uploadInput.addEventListener('change', e=>{ const file=e.target.files[0]; if(file){ const reader=new FileReader(); reader.onload=function(event){ uploadedSrc=event.target.result; previewImg.src=uploadedSrc; }; reader.readAsDataURL(file); } });
 
-// Apply style (placeholder) function applyStyle(style){ if(!uploadedImage) return; ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(uploadedImage,0,0,canvas.width,canvas.height); ctx.fillStyle="rgba(255,255,255,0.3)"; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.fillStyle="#333"; ctx.font="40px Montserrat"; ctx.fillText("Cartoon Style: "+style,50,canvas.height/2); }
+// Apply style (placeholder overlay) function applyStyle(style){ if(!uploadedSrc){ alert('Please upload a photo first!'); return; } previewImg.src=uploadedSrc; // reset original // simulate cartoon overlay by adding text setTimeout(()=>{ previewImg.src=uploadedSrc; // still placeholder alert('Cartoon Style Applied: '+style+' (real AI integration needed)'); },100); }
 
-generateBtn.addEventListener("click",()=>{ if(!uploadedImage){ alert("Please upload a photo first!"); return; } const rand=styles[Math.floor(Math.random()*styles.length)]; applyStyle(rand); // TODO: Replace with real AI API });
+generateBtn.addEventListener('click',()=>{ const rand=styles[Math.floor(Math.random()*styles.length)]; applyStyle(rand); });
 
-randomStyleBtn.addEventListener("click",()=>{ if(!uploadedImage){ alert("Please upload a photo first!"); return; } const rand=styles[Math.floor(Math.random()*styles.length)]; applyStyle(rand); });
+randomStyleBtn.addEventListener('click',()=>{ const rand=styles[Math.floor(Math.random()*styles.length)]; applyStyle(rand); });
 
-darkToggle.addEventListener("click",()=>{ document.body.classList.toggle("dark-mode"); });
+darkToggle.addEventListener('click',()=>{ document.body.classList.toggle('dark-mode'); });
 
-downloadBtn.addEventListener("click",()=>{ if(!uploadedImage){ alert("Please upload a photo first!"); return; } const link=document.createElement("a"); link.download="cartoon.png"; link.href=canvas.toDataURL(); link.click(); }); </script>
+downloadBtn.addEventListener('click',()=>{ if(!uploadedSrc){ alert('Please upload a photo first!'); return; } const link=document.createElement('a'); link.download='cartoon.png'; link.href=uploadedSrc; link.click(); }); </script>
 
 </body>
 </html>
