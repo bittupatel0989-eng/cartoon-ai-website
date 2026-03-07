@@ -12,7 +12,7 @@ h1 { color:#fff; text-shadow:0 2px 8px rgba(0,0,0,0.3); margin:20px 0; }
 .custom-upload { background:linear-gradient(45deg,#ff9a9e,#fad0c4); color:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.25); }
 .custom-upload:hover, button:hover { transform:scale(1.05); box-shadow:0 6px 18px rgba(0,0,0,0.35); }
 input[type='file'] { display:none; }
-#preview { width:100%; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,0.3); max-height:600px; object-fit:contain; }
+#output-canvas { width:100%; max-width:800px; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,0.3); }
 .button-container { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-bottom:20px; }
 body.dark-mode { background: linear-gradient(135deg,#2c3e50,#34495e); }
 body.dark-mode .custom-upload, body.dark-mode button { background: linear-gradient(45deg,#34495e,#2c3e50); color:#fff; }
@@ -23,7 +23,7 @@ body.dark-mode .custom-upload, body.dark-mode button { background: linear-gradie
 <div class="upload-container">
 <label for="upload-photo" class="custom-upload">Upload Photo</label>
 <input type="file" id="upload-photo" accept="image/*">
-<img id="preview" src="" alt="Uploaded Photo Preview">
+<canvas id="output-canvas"></canvas>
 </div>
 <div class="button-container">
 <button id="generate-cartoon">Generate Cartoon</button>
@@ -32,16 +32,19 @@ body.dark-mode .custom-upload, body.dark-mode button { background: linear-gradie
 <button id="dark-toggle">Dark/Light Mode</button>
 </div>
 <script>
+const canvas=document.getElementById('output-canvas');
+const ctx=canvas.getContext('2d');
+canvas.width=800;
+canvas.height=800;
 const uploadInput=document.getElementById('upload-photo');
-const previewImg=document.getElementById('preview');
 const generateBtn=document.getElementById('generate-cartoon');
 const randomStyleBtn=document.getElementById('random-style');
 const downloadBtn=document.getElementById('download-photo');
-const darkToggle=document.getElementById('dark-toggle');let uploadedSrc=''; const styles=["Toon","Sketch","Comic","Watercolor","PopArt","Pencil","Neon","Cartoonify","OilPaint","Fantasy","Anime","Caricature"];
+const darkToggle=document.getElementById('dark-toggle');let uploadedImage=null; const styles=["Toon","Sketch","Comic","Watercolor","PopArt","Pencil","Neon","Cartoonify","OilPaint","Fantasy","Anime","Caricature"];
 
-// Photo upload preview uploadInput.addEventListener('change', e=>{ const file=e.target.files[0]; if(file){ const reader=new FileReader(); reader.onload=function(event){ uploadedSrc=event.target.result; previewImg.src=uploadedSrc; }; reader.readAsDataURL(file); } });
+// Upload photo and draw on canvas uploadInput.addEventListener('change', e=>{ const file=e.target.files[0]; if(file){ const reader=new FileReader(); reader.onload=function(event){ uploadedImage=new Image(); uploadedImage.onload=()=>{ canvas.height=(uploadedImage.height / uploadedImage.width)*canvas.width; ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(uploadedImage,0,0,canvas.width,canvas.height); }; uploadedImage.src=event.target.result; }; reader.readAsDataURL(file); } });
 
-// Apply style (placeholder overlay) function applyStyle(style){ if(!uploadedSrc){ alert('Please upload a photo first!'); return; } previewImg.src=uploadedSrc; // reset original // simulate cartoon overlay by adding text setTimeout(()=>{ previewImg.src=uploadedSrc; // still placeholder alert('Cartoon Style Applied: '+style+' (real AI integration needed)'); },100); }
+function applyStyle(style){ if(!uploadedImage){ alert('Please upload a photo first!'); return; } ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(uploadedImage,0,0,canvas.width,canvas.height); ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#333'; ctx.font='40px Montserrat'; ctx.fillText('Cartoon Style: '+style,50,canvas.height/2); }
 
 generateBtn.addEventListener('click',()=>{ const rand=styles[Math.floor(Math.random()*styles.length)]; applyStyle(rand); });
 
@@ -49,7 +52,7 @@ randomStyleBtn.addEventListener('click',()=>{ const rand=styles[Math.floor(Math.
 
 darkToggle.addEventListener('click',()=>{ document.body.classList.toggle('dark-mode'); });
 
-downloadBtn.addEventListener('click',()=>{ if(!uploadedSrc){ alert('Please upload a photo first!'); return; } const link=document.createElement('a'); link.download='cartoon.png'; link.href=uploadedSrc; link.click(); }); </script>
+downloadBtn.addEventListener('click',()=>{ if(!uploadedImage){ alert('Please upload a photo first!'); return; } const link=document.createElement('a'); link.download='cartoon.png'; link.href=canvas.toDataURL(); link.click(); }); </script>
 
 </body>
 </html>
