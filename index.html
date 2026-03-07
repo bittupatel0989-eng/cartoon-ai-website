@@ -45,7 +45,8 @@ const downloadBtn=document.getElementById('download-photo');
 const darkToggle=document.getElementById('dark-toggle');
 
 let uploadedImage=null;
-const styles=["Cartoon Still","Sketch Still","PopArt Still","Anime Still","Caricature Still"];
+let currentStyle='Normal';
+const styles=["Normal","Grayscale","Contrast","Sepia","Hue","Saturate"];
 
 // Create style buttons dynamically
 styles.forEach(style=>{
@@ -53,9 +54,7 @@ styles.forEach(style=>{
   btn.className='style-btn';
   btn.textContent=style;
   btn.disabled=true;
-  btn.addEventListener('click',()=>{
-    applyStyle(style);
-  });
+  btn.addEventListener('click',()=>{ currentStyle=style; applyStyle(style); });
   styleOptionsDiv.appendChild(btn);
 });
 
@@ -70,8 +69,7 @@ uploadInput.addEventListener('change', e=>{
         const ratio=uploadedImage.height / uploadedImage.width;
         canvas.width=Math.min(800, uploadedImage.width);
         canvas.height=canvas.width * ratio;
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        ctx.drawImage(uploadedImage,0,0,canvas.width,canvas.height);
+        applyStyle(currentStyle);
         // Enable style buttons and download
         document.querySelectorAll('.style-btn').forEach(b=>b.disabled=false);
         downloadBtn.disabled=false;
@@ -82,23 +80,44 @@ uploadInput.addEventListener('change', e=>{
   }
 });
 
+// Apply pseudo cartoon / style effect
 function applyStyle(style){
-  if(!uploadedImage){ alert('Please upload a photo first!'); return; }
+  if(!uploadedImage) return;
   ctx.clearRect(0,0,canvas.width,canvas.height);
   ctx.drawImage(uploadedImage,0,0,canvas.width,canvas.height);
-  // Placeholder for style effect (currently visual only)
-  // Real AI effect can be integrated here
+  ctx.globalCompositeOperation='source-over';
+  switch(style){
+    case "Grayscale":
+      ctx.filter='grayscale(100%)';
+      break;
+    case "Contrast":
+      ctx.filter='contrast(150%)';
+      break;
+    case "Sepia":
+      ctx.filter='sepia(80%)';
+      break;
+    case "Hue":
+      ctx.filter='hue-rotate(90deg)';
+      break;
+    case "Saturate":
+      ctx.filter='saturate(200%)';
+      break;
+    default:
+      ctx.filter='none';
+  }
+  ctx.drawImage(uploadedImage,0,0,canvas.width,canvas.height);
+  ctx.filter='none';
 }
 
-// Download image
+// Download image with applied filter
 downloadBtn.addEventListener('click',()=>{
-  if(!uploadedImage){ alert('Please upload a photo first!'); return; }
+  if(!uploadedImage) return;
   const tempCanvas=document.createElement('canvas');
   const tempCtx=tempCanvas.getContext('2d');
   tempCanvas.width=canvas.width;
   tempCanvas.height=canvas.height;
-  tempCtx.drawImage(uploadedImage,0,0,canvas.width,canvas.height);
-  // Placeholder: AI style effect can be applied here
+  tempCtx.filter=ctx.filter;
+  tempCtx.drawImage(canvas,0,0,canvas.width,canvas.height);
   const link=document.createElement('a');
   link.download='cartoon.png';
   link.href=tempCanvas.toDataURL();
@@ -106,9 +125,7 @@ downloadBtn.addEventListener('click',()=>{
 });
 
 // Dark mode toggle
-darkToggle.addEventListener('click',()=>{
-  document.body.classList.toggle('dark-mode');
-});
+darkToggle.addEventListener('click',()=>{ document.body.classList.toggle('dark-mode'); });
 </script>
 </body>
 </html>
