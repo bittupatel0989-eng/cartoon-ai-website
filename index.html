@@ -41,15 +41,15 @@ canvas.height=800;
 const uploadInput=document.getElementById('upload-photo');
 const styleOptionsDiv=document.getElementById('style-options');
 const downloadBtn=document.getElementById('download-photo');
-const darkToggle=document.getElementById('dark-toggle');let uploadedImage=null; let currentStyle='None'; const styles=["Cartoon Still","Sketch Still","PopArt Still","Anime Still","Caricature Still"];
+const darkToggle=document.getElementById('dark-toggle');let uploadedImage=null; const styles=["Cartoon Still","Sketch Still","PopArt Still","Anime Still","Caricature Still"];
 
-// Create style buttons dynamically styles.forEach(style=>{ const btn=document.createElement('button'); btn.className='style-btn'; btn.textContent=style; btn.disabled=true; btn.addEventListener('click',()=>{ currentStyle=style; applyStyle(style); }); styleOptionsDiv.appendChild(btn); });
+// Create style buttons dynamically styles.forEach(style=>{ const btn=document.createElement('button'); btn.className='style-btn'; btn.textContent=style; btn.disabled=true; btn.addEventListener('click',()=>{ applyStyle(style); }); styleOptionsDiv.appendChild(btn); });
 
 // Upload photo and draw on canvas uploadInput.addEventListener('change', e=>{ const file=e.target.files[0]; if(file){ const reader=new FileReader(); reader.onload=function(event){ uploadedImage=new Image(); uploadedImage.onload=()=>{ const ratio=uploadedImage.height / uploadedImage.width; canvas.width=Math.min(800, uploadedImage.width); canvas.height=canvas.width * ratio; ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(uploadedImage,0,0,canvas.width,canvas.height); // Enable style buttons and download document.querySelectorAll('.style-btn').forEach(b=>b.disabled=false); downloadBtn.disabled=false; }; uploadedImage.src=event.target.result; }; reader.readAsDataURL(file); } });
 
-function applyStyle(style){ if(!uploadedImage){ alert('Please upload a photo first!'); return; } ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(uploadedImage,0,0,canvas.width,canvas.height); // Display style name on canvas for user, but it won't be in download ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.fillRect(0,canvas.height-50,canvas.width,50); ctx.fillStyle='#333'; ctx.font='24px Montserrat'; ctx.fillText(style,20,canvas.height-20); }
+function applyStyle(style){ if(!uploadedImage){ alert('Please upload a photo first!'); return; } ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(uploadedImage,0,0,canvas.width,canvas.height); // Placeholder for style effect (currently visual only, no text) // Later AI integration can apply real style effect here }
 
-// Download original image with applied style but without text overlay downloadBtn.addEventListener('click',()=>{ if(!uploadedImage){ alert('Please upload a photo first!'); return; } const tempCanvas=document.createElement('canvas'); const tempCtx=tempCanvas.getContext('2d'); tempCanvas.width=canvas.width; tempCanvas.height=canvas.height; tempCtx.drawImage(uploadedImage,0,0,canvas.width,canvas.height); // Placeholder: could apply AI style effect here if integrated const link=document.createElement('a'); link.download='cartoon.png'; link.href=tempCanvas.toDataURL(); link.click(); });
+// Download image downloadBtn.addEventListener('click',()=>{ if(!uploadedImage){ alert('Please upload a photo first!'); return; } const tempCanvas=document.createElement('canvas'); const tempCtx=tempCanvas.getContext('2d'); tempCanvas.width=canvas.width; tempCanvas.height=canvas.height; tempCtx.drawImage(uploadedImage,0,0,canvas.width,canvas.height); // Placeholder: real style effect can be applied here if AI integrated const link=document.createElement('a'); link.download='cartoon.png'; link.href=tempCanvas.toDataURL(); link.click(); });
 
 // Dark mode toggle darkToggle.addEventListener('click',()=>{ document.body.classList.toggle('dark-mode'); }); </script>
 
