@@ -1,8 +1,9 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pro Max Cartoon Generator - Guaranteed Upload</title>
+<title>Pro Max Cartoon Generator</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 <style>
 body { margin:0; padding:0; font-family:'Montserrat',sans-serif; background:linear-gradient(135deg,#ff9a9e,#fad0c4); display:flex; flex-direction:column; align-items:center; min-height:100vh; }
@@ -21,15 +22,15 @@ body.dark-mode .custom-upload, body.dark-mode button { background: linear-gradie
 <body>
 <h1>Pro Max Cartoon Generator</h1>
 <div class="upload-container">
-<label for="upload-photo" class="custom-upload">Upload Photo</label>
-<input type="file" id="upload-photo" accept="image/*">
-<canvas id="output-canvas"></canvas>
+  <label for="upload-photo" class="custom-upload">Upload Photo</label>
+  <input type="file" id="upload-photo" accept="image/*">
+  <canvas id="output-canvas"></canvas>
 </div>
 <div class="button-container">
-<button id="generate-cartoon">Generate Cartoon</button>
-<button id="random-style">Random Style</button>
-<button id="download-photo">Download Cartoon</button>
-<button id="dark-toggle">Dark/Light Mode</button>
+  <button id="generate-cartoon" disabled>Generate Cartoon</button>
+  <button id="random-style" disabled>Random Style</button>
+  <button id="download-photo" disabled>Download Cartoon</button>
+  <button id="dark-toggle">Dark/Light Mode</button>
 </div>
 <script>
 const canvas=document.getElementById('output-canvas');
@@ -40,19 +41,67 @@ const uploadInput=document.getElementById('upload-photo');
 const generateBtn=document.getElementById('generate-cartoon');
 const randomStyleBtn=document.getElementById('random-style');
 const downloadBtn=document.getElementById('download-photo');
-const darkToggle=document.getElementById('dark-toggle');let uploadedImage=null; const styles=["Toon","Sketch","Comic","Watercolor","PopArt","Pencil","Neon","Cartoonify","OilPaint","Fantasy","Anime","Caricature"];
+const darkToggle=document.getElementById('dark-toggle');
 
-// Upload photo and draw on canvas - guaranteed working uploadInput.addEventListener('change', e=>{ const file=e.target.files[0]; if(file){ const reader=new FileReader(); reader.onload=function(event){ uploadedImage=new Image(); uploadedImage.onload=()=>{ // Resize canvas dynamically to image aspect ratio const ratio=uploadedImage.height / uploadedImage.width; canvas.width=Math.min(800, uploadedImage.width); canvas.height=canvas.width * ratio; ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(uploadedImage,0,0,canvas.width,canvas.height); }; uploadedImage.src=event.target.result; }; reader.readAsDataURL(file); } });
+let uploadedImage=null;
+const styles=["Toon","Sketch","Comic","Watercolor","PopArt","Pencil","Neon","Cartoonify","OilPaint","Fantasy","Anime","Caricature"];
 
-function applyStyle(style){ if(!uploadedImage){ alert('Please upload a photo first!'); return; } ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(uploadedImage,0,0,canvas.width,canvas.height); ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#333'; ctx.font='40px Montserrat'; ctx.fillText('Cartoon Style: '+style,50,canvas.height/2); }
+// Upload photo and draw on canvas
+uploadInput.addEventListener('change', e=>{
+  const file=e.target.files[0];
+  if(file){
+    const reader=new FileReader();
+    reader.onload=function(event){
+      uploadedImage=new Image();
+      uploadedImage.onload=()=>{
+        const ratio=uploadedImage.height / uploadedImage.width;
+        canvas.width=Math.min(800, uploadedImage.width);
+        canvas.height=canvas.width * ratio;
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(uploadedImage,0,0,canvas.width,canvas.height);
+        // Enable buttons after successful upload
+        generateBtn.disabled=false;
+        randomStyleBtn.disabled=false;
+        downloadBtn.disabled=false;
+      };
+      uploadedImage.src=event.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+});
 
-generateBtn.addEventListener('click',()=>{ const rand=styles[Math.floor(Math.random()*styles.length)]; applyStyle(rand); });
+function applyStyle(style){
+  if(!uploadedImage){ alert('Please upload a photo first!'); return; }
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.drawImage(uploadedImage,0,0,canvas.width,canvas.height);
+  ctx.fillStyle='rgba(255,255,255,0.3)';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#333';
+  ctx.font='40px Montserrat';
+  ctx.fillText('Cartoon Style: '+style,50,canvas.height/2);
+}
 
-randomStyleBtn.addEventListener('click',()=>{ const rand=styles[Math.floor(Math.random()*styles.length)]; applyStyle(rand); });
+generateBtn.addEventListener('click',()=>{
+  const rand=styles[Math.floor(Math.random()*styles.length)];
+  applyStyle(rand);
+});
 
-darkToggle.addEventListener('click',()=>{ document.body.classList.toggle('dark-mode'); });
+randomStyleBtn.addEventListener('click',()=>{
+  const rand=styles[Math.floor(Math.random()*styles.length)];
+  applyStyle(rand);
+});
 
-downloadBtn.addEventListener('click',()=>{ if(!uploadedImage){ alert('Please upload a photo first!'); return; } const link=document.createElement('a'); link.download='cartoon.png'; link.href=canvas.toDataURL(); link.click(); }); </script>
+darkToggle.addEventListener('click',()=>{
+  document.body.classList.toggle('dark-mode');
+});
 
+downloadBtn.addEventListener('click',()=>{
+  if(!uploadedImage){ alert('Please upload a photo first!'); return; }
+  const link=document.createElement('a');
+  link.download='cartoon.png';
+  link.href=canvas.toDataURL();
+  link.click();
+});
+</script>
 </body>
 </html>
