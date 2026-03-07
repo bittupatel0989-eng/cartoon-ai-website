@@ -2,72 +2,205 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pro Max Cartoon Generator v6</title>
+<title>Pro Max Cartoon Generator</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 <style>
-body { margin:0; padding:0; font-family:'Montserrat',sans-serif; background:linear-gradient(135deg,#ff9a9e,#fad0c4); display:flex; flex-direction:column; align-items:center; min-height:100vh; }
-h1 { color:#fff; text-shadow:0 2px 8px rgba(0,0,0,0.3); margin:20px 0; }
-.upload-container { display:flex; flex-direction:column; align-items:center; gap:15px; margin-bottom:20px; width:100%; max-width:600px; }
-.custom-upload, button { padding:12px 20px; font-size:16px; border-radius:12px; border:none; cursor:pointer; font-weight:600; transition:0.2s; }
-.custom-upload { background:linear-gradient(45deg,#ff9a9e,#fad0c4); color:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.25); }
-.custom-upload:hover, button:hover { transform:scale(1.05); box-shadow:0 6px 18px rgba(0,0,0,0.35); }
-input[type='file'] { display:none; }
-#output-canvas { width:100%; max-width:800px; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,0.3); }
-.button-container { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-bottom:20px; }
-#style-options { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-bottom:20px; }
-.style-btn { padding:8px 16px; border-radius:10px; border:none; cursor:pointer; font-weight:600; background:#fff; transition:0.2s; display:inline-block; }
-.style-btn:hover { transform:scale(1.05); box-shadow:0 4px 12px rgba(0,0,0,0.25); }
-.slider-container { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-bottom:20px; }
-input[type='range'] { cursor:pointer; }
-body.dark-mode { background: linear-gradient(135deg,#2c3e50,#34495e); }
-body.dark-mode .custom-upload, body.dark-mode button, body.dark-mode .style-btn { background: linear-gradient(45deg,#34495e,#2c3e50); color:#fff; }
+body{margin:0;padding:0;font-family:'Montserrat',sans-serif;background:linear-gradient(135deg,#ff9a9e,#fad0c4);display:flex;flex-direction:column;align-items:center;min-height:100vh}
+h1{color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.3);margin:20px 0}
+.upload-container{display:flex;flex-direction:column;align-items:center;gap:15px;margin-bottom:20px;width:100%;max-width:600px}
+.custom-upload,button{padding:12px 20px;font-size:16px;border-radius:12px;border:none;cursor:pointer;font-weight:600;transition:.2s}
+.custom-upload{background:linear-gradient(45deg,#ff9a9e,#fad0c4);color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.custom-upload:hover,button:hover{transform:scale(1.05);box-shadow:0 6px 18px rgba(0,0,0,.35)}
+input[type=file]{display:none}
+#output-canvas{width:100%;max-width:800px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+#style-options,#sub-options{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:15px}
+.style-btn,.sub-btn{padding:8px 16px;border-radius:10px;border:none;cursor:pointer;font-weight:600;background:#fff;transition:.2s}
+.style-btn:hover,.sub-btn:hover{transform:scale(1.05);box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.button-container{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:20px}
+body.dark-mode{background:linear-gradient(135deg,#2c3e50,#34495e)}
+body.dark-mode .custom-upload,body.dark-mode button,body.dark-mode .style-btn,body.dark-mode .sub-btn{background:linear-gradient(45deg,#34495e,#2c3e50);color:#fff}
 </style>
 </head>
 <body>
-<h1>Pro Max Cartoon Generator v6</h1>
-<div class="upload-container">
-  <label for="upload-photo" class="custom-upload">Upload Photo</label>
-  <input type="file" id="upload-photo" accept="image/*">
-  <canvas id="output-canvas"></canvas>
-</div>
-<div id="style-options"></div>
-<div class="slider-container">
-  <label>Brightness: <input type="range" id="brightness-slider" min="50" max="200" value="100"></label>
-  <label>Contrast: <input type="range" id="contrast-slider" min="50" max="200" value="100"></label>
-  <label>Saturation: <input type="range" id="saturation-slider" min="50" max="300" value="100"></label>
-  <label>Sketch Intensity: <input type="range" id="sketch-slider" min="1" max="5" value="2"></label>
-</div>
-<div class="button-container">
-  <button id="download-photo" disabled>Download Cartoon</button>
-  <button id="dark-toggle">Dark/Light Mode</button>
-</div>
-<script>
+<h1>Pro Max Cartoon Generator</h1><div class="upload-container">
+<label for="upload-photo" class="custom-upload">Upload Photo</label>
+<input type="file" id="upload-photo" accept="image/*">
+<canvas id="output-canvas"></canvas>
+</div><div id="style-options"></div>
+<div id="sub-options"></div><div class="button-container">
+<button id="download-photo" disabled>Download</button>
+<button id="dark-toggle">Dark/Light</button>
+</div><script>
 const canvas=document.getElementById('output-canvas');
 const ctx=canvas.getContext('2d');
 const uploadInput=document.getElementById('upload-photo');
-const styleOptionsDiv=document.getElementById('style-options');
+const styleDiv=document.getElementById('style-options');
+const subDiv=document.getElementById('sub-options');
 const downloadBtn=document.getElementById('download-photo');
 const darkToggle=document.getElementById('dark-toggle');
-const brightnessSlider=document.getElementById('brightness-slider');
-const contrastSlider=document.getElementById('contrast-slider');
-const saturationSlider=document.getElementById('saturation-slider');
-const sketchSlider=document.getElementById('sketch-slider');let uploadedImage=null; let currentStyle='Normal'; const styles=["Normal","Grayscale","Contrast","Sepia","Hue","Saturate","Invert","Brightness","Pixelate","PopArt","Blur","Sketch"];
 
-function enableStyleButtons(){ document.querySelectorAll('.style-btn').forEach(btn=>btn.disabled=false); downloadBtn.disabled=false; }
+let uploadedImage=null;
+let currentStyle="Normal";
+let currentSub="Default";
 
-styles.forEach(style=>{ const btn=document.createElement('button'); btn.className='style-btn'; btn.textContent=style; btn.disabled=true; btn.addEventListener('click',()=>{ currentStyle=style; applyStyle(); }); styleOptionsDiv.appendChild(btn); });
+const styles={
+Normal:["Default"],
+Grayscale:["Soft","Hard"],
+Contrast:["Low","Medium","High"],
+Sepia:["Light","Classic"],
+Hue:["Red","Green","Blue"],
+Saturate:["Mild","Strong","Extreme"],
+Invert:["Full","Soft"],
+Brightness:["Soft","Bright"],
+Pixelate:["Small","Medium","Big"],
+PopArt:["Classic","Neon","Dots"],
+Blur:["Light","Medium","Heavy"],
+Sketch:["BlackWhite","Pencil","Color"]
+};
 
-uploadInput.addEventListener('change', e=>{ const file=e.target.files[0]; if(file){ const reader=new FileReader(); reader.onload=function(event){ uploadedImage=new Image(); uploadedImage.onload=()=>{ const ratio=uploadedImage.height / uploadedImage.width; canvas.width=Math.min(800, uploadedImage.width); canvas.height=canvas.width * ratio; enableStyleButtons(); applyStyle(); } uploadedImage.src=event.target.result; } reader.readAsDataURL(file); } });
+Object.keys(styles).forEach(style=>{
+const btn=document.createElement('button');
+btn.className="style-btn";
+btn.textContent=style;
+btn.disabled=true;
+btn.onclick=()=>{
+currentStyle=style;
+createSubOptions();
+applyStyle();
+};
+styleDiv.appendChild(btn);
+});
 
-[brightnessSlider, contrastSlider, saturationSlider, sketchSlider].forEach(slider=>{ slider.addEventListener('input', applyStyle); });
+function createSubOptions(){
+subDiv.innerHTML="";
+styles[currentStyle].forEach(sub=>{
+const btn=document.createElement('button');
+btn.className="sub-btn";
+btn.textContent=sub;
+btn.onclick=()=>{
+currentSub=sub;
+applyStyle();
+};
+subDiv.appendChild(btn);
+});
+}
 
-function applyStyle(){ if(!uploadedImage) return; ctx.clearRect(0,0,canvas.width,canvas.height); ctx.globalCompositeOperation='source-over'; let brightness=brightnessSlider.value; let contrast=contrastSlider.value; let saturate=saturationSlider.value; let sketchIntensity=sketchSlider.value;
+uploadInput.addEventListener('change',e=>{
+const file=e.target.files[0];
+if(!file)return;
+const reader=new FileReader();
+reader.onload=ev=>{
+uploadedImage=new Image();
+uploadedImage.onload=()=>{
+canvas.width=Math.min(800,uploadedImage.width);
+canvas.height=canvas.width*(uploadedImage.height/uploadedImage.width);
 
-switch(currentStyle){ case "Grayscale": ctx.filter=grayscale(100%) brightness(${brightness}%) contrast(${contrast}%) saturate(${saturate}%); break; case "Contrast": ctx.filter=contrast(${contrast}%) brightness(${brightness}%) saturate(${saturate}%); break; case "Sepia": ctx.filter=sepia(80%) brightness(${brightness}%) contrast(${contrast}%) saturate(${saturate}%); break; case "Hue": ctx.filter=hue-rotate(90deg) brightness(${brightness}%) contrast(${contrast}%) saturate(${saturate}%); break; case "Saturate": ctx.filter=saturate(${saturate}%) brightness(${brightness}%) contrast(${contrast}%); break; case "Invert": ctx.filter=invert(100%) brightness(${brightness}%) contrast(${contrast}%); break; case "Brightness": ctx.filter=brightness(${brightness}%) contrast(${contrast}%) saturate(${saturate}%); break; case "Pixelate": { const size=10; ctx.drawImage(uploadedImage,0,0,canvas.width,canvas.height); const imageData=ctx.getImageData(0,0,canvas.width,canvas.height); for(let y=0;y<canvas.height;y+=size){ for(let x=0;x<canvas.width;x+=size){ const p=(y*canvas.width+x)*4; const r=imageData.data[p]; const g=imageData.data[p+1]; const b=imageData.data[p+2]; for(let n=0;n<size;n++){ for(let m=0;m<size;m++){ if(x+m<canvas.width && y+n<canvas.height){ const idx=((y+n)*canvas.width+(x+m))*4; imageData.data[idx]=r; imageData.data[idx+1]=g; imageData.data[idx+2]=b; } } } } } ctx.putImageData(imageData,0,0); return; } case "PopArt": ctx.filter=contrast(200%) saturate(250%) brightness(${brightness}%); break; case "Blur": ctx.filter='blur(2px)'; break; case "Sketch": { ctx.drawImage(uploadedImage,0,0,canvas.width,canvas.height); let imageData=ctx.getImageData(0,0,canvas.width,canvas.height); for(let i=0;i<imageData.data.length;i+=4){ const avg=(imageData.data[i]+imageData.data[i+1]+imageData.data[i+2])/3; imageData.data[i]=avg; imageData.data[i+1]=avg; imageData.data[i+2]=avg; } ctx.putImageData(imageData,0,0); ctx.globalCompositeOperation='color-burn'; ctx.filter=contrast(${sketchIntensity*50}%); ctx.drawImage(canvas,0,0); ctx.globalCompositeOperation='source-over'; ctx.filter='none'; return; } default: ctx.filter='none'; } ctx.drawImage(uploadedImage,0,0,canvas.width,canvas.height); }
+Array.from(document.querySelectorAll('.style-btn')).forEach(b=>b.disabled=false);
+downloadBtn.disabled=false;
 
-downloadBtn.addEventListener('click',()=>{ if(!uploadedImage) return; const tempCanvas=document.createElement('canvas'); const tempCtx=tempCanvas.getContext('2d'); tempCanvas.width=canvas.width; tempCanvas.height=canvas.height; tempCtx.drawImage(canvas,0,0,canvas.width,canvas.height); const link=document.createElement('a'); link.download='cartoon.png'; link.href=tempCanvas.toDataURL(); link.click(); });
+applyStyle();
+};
+uploadedImage.src=ev.target.result;
+};
+reader.readAsDataURL(file);
+});
 
-darkToggle.addEventListener('click',()=>{ document.body.classList.toggle('dark-mode'); }); </script>
+function applyStyle(){
+if(!uploadedImage)return;
+ctx.clearRect(0,0,canvas.width,canvas.height);
+ctx.filter='none';
 
-</body>
+switch(currentStyle){
+
+case "Grayscale":
+ctx.filter=currentSub=="Hard"?'grayscale(100%)':'grayscale(60%)';
+break;
+
+case "Contrast":
+ctx.filter=currentSub=="Low"?'contrast(110%)':currentSub=="Medium"?'contrast(150%)':'contrast(200%)';
+break;
+
+case "Sepia":
+ctx.filter=currentSub=="Light"?'sepia(40%)':'sepia(80%)';
+break;
+
+case "Hue":
+ctx.filter=currentSub=="Red"?'hue-rotate(0deg)':currentSub=="Green"?'hue-rotate(90deg)':'hue-rotate(200deg)';
+break;
+
+case "Saturate":
+ctx.filter=currentSub=="Mild"?'saturate(130%)':currentSub=="Strong"?'saturate(200%)':'saturate(300%)';
+break;
+
+case "Invert":
+ctx.filter=currentSub=="Soft"?'invert(50%)':'invert(100%)';
+break;
+
+case "Brightness":
+ctx.filter=currentSub=="Soft"?'brightness(120%)':'brightness(160%)';
+break;
+
+case "Blur":
+ctx.filter=currentSub=="Light"?'blur(2px)':currentSub=="Medium"?'blur(4px)':'blur(8px)';
+break;
+
+case "PopArt":
+ctx.filter=currentSub=="Neon"?'contrast(200%) saturate(300%)':currentSub=="Dots"?'contrast(180%) saturate(220%)':'contrast(160%) saturate(200%)';
+break;
+
+case "Pixelate":
+ctx.drawImage(uploadedImage,0,0,canvas.width,canvas.height);
+let size=currentSub=="Small"?6:currentSub=="Medium"?10:20;
+let img=ctx.getImageData(0,0,canvas.width,canvas.height);
+for(let y=0;y<canvas.height;y+=size){
+for(let x=0;x<canvas.width;x+=size){
+let i=(y*canvas.width+x)*4;
+let r=img.data[i];
+let g=img.data[i+1];
+let b=img.data[i+2];
+for(let yy=0;yy<size;yy++){
+for(let xx=0;xx<size;xx++){
+let ii=((y+yy)*canvas.width+(x+xx))*4;
+img.data[ii]=r;
+img.data[ii+1]=g;
+img.data[ii+2]=b;
+}
+}
+}
+}
+ctx.putImageData(img,0,0);
+return;
+
+case "Sketch":
+ctx.drawImage(uploadedImage,0,0,canvas.width,canvas.height);
+let data=ctx.getImageData(0,0,canvas.width,canvas.height);
+for(let i=0;i<data.data.length;i+=4){
+let avg=(data.data[i]+data.data[i+1]+data.data[i+2])/3;
+if(currentSub=="Color"){
+data.data[i]=avg;
+}else{
+data.data[i]=avg;
+data.data[i+1]=avg;
+data.data[i+2]=avg;
+}
+}
+ctx.putImageData(data,0,0);
+ctx.filter=currentSub=="Pencil"?'contrast(200%)':'contrast(150%)';
+ctx.drawImage(canvas,0,0);
+return;
+}
+
+ctx.drawImage(uploadedImage,0,0,canvas.width,canvas.height);
+}
+
+downloadBtn.onclick=()=>{
+const link=document.createElement('a');
+link.download='cartoon.png';
+link.href=canvas.toDataURL();
+link.click();
+};
+
+darkToggle.onclick=()=>document.body.classList.toggle('dark-mode');
+
+</script></body>
 </html>
